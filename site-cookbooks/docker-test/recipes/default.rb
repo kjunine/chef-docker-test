@@ -24,8 +24,16 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+docker_image 'kjunine/nginx' do
+  action :pull
+  notifies :redeploy, 'docker_container[nginx]', :immediately
+end
+
 docker_container 'nginx' do
   image 'kjunine/nginx'
+  container_name 'nginx'
+  entrypoint 'nginx'
+  command '-g "daemon off;"'
   detach true
   port '80:80'
   action :run

@@ -11,11 +11,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   # config.vm.box = "base"
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "chef/ubuntu-14.04"
 
-  config.vm.define "chef-docker-test" do |docker|
-    docker.vm.network "forwarded_port", guest: 2375, host: 2375
-    docker.vm.network "private_network", ip: "192.168.33.100"
+  config.omnibus.chef_version = :latest
+  config.berkshelf.enabled = true
+
+  config.vm.define "chef-docker-test"
+  config.vm.network "forwarded_port", guest: 2375, host: 2375
+  config.vm.network "private_network", ip: "192.168.33.100"
+
+  config.vm.provision "chef_solo" do |chef|
+    chef.cookbooks_path = ["cookbooks", "site-cookbooks"]
+    chef.roles_path = "roles"
+    chef.environments_path = "environments"
+    chef.data_bags_path = "data_bags"
+    chef.add_recipe "docker"
+    chef.add_recipe "docker-test"
+
+    chef.json = {
+      "docker" => {
+        "host" => [
+          "unix:///var/run/docker.sock",
+          "tcp://0.0.0.0:2375"
+        ]
+      }
+    }
   end
 
   # Disable automatic box update checking. If you disable this, then
