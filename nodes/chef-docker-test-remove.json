@@ -1,0 +1,15 @@
+{
+  "docker": {
+    "host": [
+      "unix:///var/run/docker.sock",
+      "tcp://0.0.0.0:2375"
+    ]
+  },
+  "run_list": [
+    "docker",
+    "docker-test::remove"
+  ],
+  "automatic": {
+    "ipaddress": "chef-docker-test"
+  }
+}
